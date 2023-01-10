@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+- 2.6.5
+
+before_install:
+- gem install bundler
+install:
+- bundle install
+
+env:
+  global:
+  - secure: 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
