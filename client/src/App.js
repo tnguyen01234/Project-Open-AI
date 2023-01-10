@@ -7,7 +7,13 @@ import { useEffect } from "react";
 
 function App() {
 
-const [input, setInput] = useState("")
+  useEffect(() => {
+    getEngines();
+  }, [])
+
+const [input, setInput] = useState("");
+const [models, setModels] = useState([]);
+const [currentModel, setCurrentModel] = useState("ada");
 const [chatLog, setChatlog] = useState([{
   user: "gpt",
   message: "How can i help you today?"
@@ -20,6 +26,12 @@ function clearChat() {
   setChatlog([]);
 }
 
+
+function getEngines() {
+  fetch("http://localhost:3090/models")
+  .then(res => res.json())
+  .then(data => setModels(data.models))
+}
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -35,7 +47,8 @@ let chatLogNew = [...chatLog, { user: "me", message: `${input}`}]
         "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      message: messages
+      message: messages,
+      currentModel
     })
     });
     const data = await response.json();
@@ -48,6 +61,15 @@ let chatLogNew = [...chatLog, { user: "me", message: `${input}`}]
         <div className="side__menu__button" onClick={clearChat}>
           <span>+</span>
           New Chat
+        </div>
+        <div className="models">
+          <select onChange={(e) => {
+            setCurrentModel(e.target.value)
+          }}>
+            {models.map((model, index) => (
+              <option key={model.id} value={model.id} >{model.id}</option>
+            ))}
+          </select>
         </div>
       </aside>
       <section className="chatbox">
